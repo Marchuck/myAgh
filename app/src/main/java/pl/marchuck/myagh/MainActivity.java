@@ -1,13 +1,9 @@
 package pl.marchuck.myagh;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,22 +15,20 @@ import android.view.MenuItem;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
+import pl.marchuck.myagh.ifaces.FabListener;
+import pl.marchuck.myagh.tabs.AboutFragment;
+import pl.marchuck.myagh.tabs.AghMapFragment;
+import pl.marchuck.myagh.tabs.NewsFragment;
+import pl.marchuck.myagh.tabs.SplashScreenFragment;
 import pl.marchuck.myagh.utils.Animations;
-import pl.marchuck.myagh.utils.Defaults;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public static final String TAG = MainActivity.class.getSimpleName();
     public static int LOCATION_PERMISSIONS = 61;
 
-    @OnClick(R.id.fab)
-    public void onFabClick() {
-
-    }
-
     @Bind(R.id.fab)
-    FloatingActionButton fab;
+    public FloatingActionButton fab;
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
@@ -51,6 +45,7 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         setupDrawer();
+        replaceTo(SplashScreenFragment.newInstance(), SplashScreenFragment.TAG);
     }
 
     private void setupDrawer() {
@@ -63,7 +58,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -101,28 +95,24 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.nav_map: {
                 replaceTo(AghMapFragment.newInstance(), AghMapFragment.TAG);
-                hideFab();
+                break;
+            }
+            case R.id.nav_news: {
+                replaceTo(NewsFragment.newInstance(), NewsFragment.TAG);
+                break;
+            }
+            case R.id.nav_about: {
+                replaceTo(AboutFragment.newInstance(), AboutFragment.TAG);
+                break;
+            }
+            case R.id.nav_start: {
+                replaceTo(SplashScreenFragment.newInstance(), SplashScreenFragment.TAG);
                 break;
             }
             default:
-                showFab();
+                // showFab();
                 break;
         }
-        /*
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_map) {
-            replaceTo(AghMapFragment.newInstance(), AghMapFragment.TAG);
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }*/
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -132,6 +122,10 @@ public class MainActivity extends AppCompatActivity
                 .replace(R.id.main_content, fragment, tag)
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .commitAllowingStateLoss();
+        if (fragment instanceof FabListener) {
+            FabListener fabListener = ((FabListener) fragment);
+            fab.setOnClickListener(fabListener.getFabListener());
+        }
     }
 
     @Override

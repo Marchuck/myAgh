@@ -1,10 +1,11 @@
-package pl.marchuck.myagh;
+package pl.marchuck.myagh.tabs;
 
 
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -12,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -21,8 +21,13 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Random;
 
+import pl.marchuck.myagh.MyApp;
+import pl.marchuck.myagh.R;
+import pl.marchuck.myagh.ifaces.FabListener;
 import pl.marchuck.myagh.utils.Asyncs;
 import pl.marchuck.myagh.utils.DefaultError;
+import pl.marchuck.myagh.utils.Defaults;
+import pl.marchuck.myagh.utils.StreetView;
 import rx.functions.Action1;
 
 
@@ -31,7 +36,7 @@ import rx.functions.Action1;
  * Use the {@link AghMapFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AghMapFragment extends Fragment {
+public class AghMapFragment extends Fragment implements FabListener {
     public static final String TAG = AghMapFragment.class.getSimpleName();
     SupportMapFragment supportMapFragment;
     GoogleMap googleMap;
@@ -105,9 +110,38 @@ public class AghMapFragment extends Fragment {
                             MyApp.instance.lastLocation.getLongitude());
                 }
                 googleMap.animateCamera(CameraUpdateFactory
-                        .newCameraPosition(new CameraPosition(myLocation, 16, 60, new Random().nextInt(360))));
+                        .newCameraPosition(new CameraPosition(myLocation, 17, 60, new Random().nextInt(360))));
+                googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+                    @Override
+                    public void onMapLongClick(LatLng latLng) {
+                        Log.d(TAG, "onMapLongClick: " + latLng);
+                    }
+                });
             }
         });
+    }
+
+    @Override
+    public View.OnClickListener getFabListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (googleMap == null) return;
+                LatLng l = googleMap.getCameraPosition().target;
+                Log.i(TAG, "onClick: " + l);
+                buildStreetViewDialog(l);
+            }
+        };
+    }
+
+    private void buildStreetViewDialog(LatLng l) {
+        Log.d(TAG, "buildStreetViewDialog: ");
+        new StreetView().dialog(l, this.getActivity());
+    }
+
+    @Override
+    public void setupFab(FloatingActionButton fab) {
+        Defaults.setupFAB(getActivity(), fab, R.drawable.agh_logo);
     }
 
 }
