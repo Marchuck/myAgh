@@ -1,4 +1,4 @@
-package pl.marchuck.myagh.tabs;
+package pl.marchuck.myagh.tabs.news;
 
 import android.util.Log;
 

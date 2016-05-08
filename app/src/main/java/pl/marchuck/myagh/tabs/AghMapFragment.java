@@ -136,12 +136,12 @@ public class AghMapFragment extends Fragment implements FabListener {
 
     private void buildStreetViewDialog(LatLng l) {
         Log.d(TAG, "buildStreetViewDialog: ");
-        new StreetView().dialog(l, this.getActivity());
+        StreetView.dialog(l, this.getActivity());
     }
 
     @Override
     public void setupFab(FloatingActionButton fab) {
-        Defaults.setupFAB(getActivity(), fab, R.drawable.agh_logo);
+        Defaults.setupFAB(getActivity(), fab, R.drawable.image_area);
     }
 
 }

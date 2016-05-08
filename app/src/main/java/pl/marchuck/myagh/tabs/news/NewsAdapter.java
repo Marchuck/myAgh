@@ -1,8 +1,7 @@
-package pl.marchuck.myagh.utils;
+package pl.marchuck.myagh.tabs.news;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 import java.util.List;
 
 import pl.marchuck.myagh.R;
-import pl.marchuck.myagh.tabs.Article;
 
 /**
  * @author Lukasz Marczak
@@ -42,8 +40,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.VH> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.url));
-                ctx.startActivity(browserIntent);
+//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.url));
+                Intent intent = new Intent(ctx, MoreNewsActivity.class);
+                intent.putExtra("URL", item.url);
+                ctx.startActivity(intent);
             }
         });
     }

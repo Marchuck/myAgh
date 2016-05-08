@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryLight"
     tools:context="pl.marchuck.myagh.tabs.AboutFragment">
 
     <android.support.v7.widget.RecyclerView

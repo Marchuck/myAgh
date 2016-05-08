@@ -21,7 +21,7 @@ public class SplashScreenFragment extends Fragment {
     @Bind(R.id.agh_image)
     ImageView imageView;
     boolean canLooping = true;
-    Runnable runnable;
+
 
     public SplashScreenFragment() {
         // Required empty public constructor

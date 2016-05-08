@@ -16,9 +16,10 @@ import android.view.MenuItem;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import pl.marchuck.myagh.ifaces.FabListener;
+import pl.marchuck.myagh.tabs.about_faculty.FacultyFragment;
 import pl.marchuck.myagh.tabs.AboutFragment;
 import pl.marchuck.myagh.tabs.AghMapFragment;
-import pl.marchuck.myagh.tabs.NewsFragment;
+import pl.marchuck.myagh.tabs.news.NewsFragment;
 import pl.marchuck.myagh.tabs.SplashScreenFragment;
 import pl.marchuck.myagh.utils.Animations;
 
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity
     @Bind(R.id.fab)
     public FloatingActionButton fab;
     @Bind(R.id.toolbar)
-    Toolbar toolbar;
+  public   Toolbar toolbar;
 
     @Bind(R.id.nav_view)
     NavigationView navigationView;
@@ -107,6 +108,9 @@ public class MainActivity extends AppCompatActivity
             }
             case R.id.nav_start: {
                 replaceTo(SplashScreenFragment.newInstance(), SplashScreenFragment.TAG);
+                break;
+            }   case R.id.nav_about_faculty: {
+                replaceTo(FacultyFragment.newInstance(), FacultyFragment.TAG);
                 break;
             }
             default:

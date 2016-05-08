@@ -1,39 +1,16 @@
-package pl.marchuck.myagh.tabs;
+package pl.marchuck.myagh.tabs.news;
 
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
-import java.util.List;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import pl.marchuck.myagh.MainActivity;
 import pl.marchuck.myagh.R;
 import pl.marchuck.myagh.ifaces.FabListener;
-import pl.marchuck.myagh.utils.DefaultError;
-import pl.marchuck.myagh.utils.Defaults;
-import pl.marchuck.myagh.utils.EmailSender;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 public class NewsFragment extends Fragment implements FabListener {
 

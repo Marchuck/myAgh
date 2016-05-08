@@ -10,5 +10,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="google_api_key">AIzaSyCvvTK6bhvzvttsW9dhKHEN8tAeCLSJoCk</string>
     <string name="about_text">If you have found some bug or just want contact me, you can send me an email:</string>
+    <string name="title_activity_more_news">MoreNewsActivity</string>
 
 </resources>

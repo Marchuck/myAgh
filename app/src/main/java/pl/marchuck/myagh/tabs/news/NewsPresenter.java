@@ -1,4 +1,4 @@
-package pl.marchuck.myagh.tabs;
+package pl.marchuck.myagh.tabs.news;
 
 import android.app.Activity;
 import android.support.annotation.Nullable;
@@ -20,7 +20,6 @@ import butterknife.ButterKnife;
 import pl.marchuck.myagh.R;
 import pl.marchuck.myagh.utils.DefaultError;
 import pl.marchuck.myagh.utils.JsoupProxy;
-import pl.marchuck.myagh.utils.NewsAdapter;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
@@ -56,12 +55,11 @@ public class NewsPresenter {
                     @Override
                     public void call(@Nullable Document document) {
                         if (document == null) {
-                            DefaultError.create(TAG).call(new Throwable("Nullable document"));
+                            DefaultError.create(TAG, activity).call(new Throwable("Nullable document"));
                             return;
                         }
                         Log.i(TAG, "received document " + document.title());
                         Elements articles = document.getElementsByClass("article-next-link");
-
                         setupList(articles);
                         progressBar.setVisibility(View.GONE);
 
@@ -70,16 +68,11 @@ public class NewsPresenter {
 
     }
 
-    private void printElement(Element e) {
-        Log.d(TAG, "element: html: " + e.html() + ", text: " + e.text() + ", val: " + e.val() + ", data: "
-                + e.data() + ", id: " + e.id() + ", nodeName: " + e.nodeName() + ", tag: " + e.tag()
-                + ", tagName: " + e.tagName() + ", \n" + e.outerHtml());
-    }
 
     void setupList(Elements articles) {
         List<Article> dataset = new ArrayList<>();
         for (Element el : articles) {
-            printElement(el);
+            JsoupProxy.printElement(TAG, el);
             dataset.add(new Article(el));
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));

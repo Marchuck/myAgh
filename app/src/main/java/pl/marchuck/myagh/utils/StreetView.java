@@ -1,13 +1,17 @@
 package pl.marchuck.myagh.utils;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.squareup.picasso.Picasso;
@@ -23,11 +27,16 @@ import pl.marchuck.myagh.R;
 public class StreetView {
     public static final String TAG = StreetView.class.getSimpleName();
 
-    static class LoadableImage implements Target {
+    static abstract class LoadableImage implements Target {
         ImageView imageView;
         View progress;
+        Activity a;
+        Dialog dialog;
+        boolean notLoaded = true;
 
-        public LoadableImage(ImageView im, View v) {
+        public LoadableImage(Activity ctx, Dialog di, ImageView im, View v) {
+            dialog = di;
+            a = ctx;
             imageView = im;
             progress = v;
         }
@@ -35,68 +44,63 @@ public class StreetView {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
             Log.i(TAG, "onBitmapLoaded: ");
-            imageView.setImageBitmap(bitmap);
-            progress.setVisibility(View.GONE);
-        }
-
-        @Override
-        public void onBitmapFailed(Drawable errorDrawable) {
-            Log.i(TAG, "onBitmapFailed: ");
-            progress.setVisibility(View.GONE);
+            notLoaded = false;
+            if (imageView != null && progress != null) {
+                imageView.setImageBitmap(bitmap);
+                progress.setVisibility(View.GONE);
+            }
         }
 
         @Override
         public void onPrepareLoad(Drawable placeHolderDrawable) {
             Log.i(TAG, "onPrepareLoad: ");
             progress.setVisibility(View.VISIBLE);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (notLoaded && dialog != null && a != null) {
+                        Toast.makeText(a, "Cannot fetch image", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                }
+            }, 7000);
         }
     }
 
-    private int currentFOV = 90;
-
-    public void dialog(final LatLng latLng, final FragmentActivity fragmentActivity) {
+    public static void dialog(final LatLng latLng, final FragmentActivity fragmentActivity) {
         Log.d(TAG, "dialog: ");
-        Dialog dialog = new Dialog(fragmentActivity);
+        final Dialog dialog = new Dialog(fragmentActivity);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.fragment_agh_map_street_view_dialog);
         final ImageView imageView = (ImageView) dialog.findViewById(R.id.image);
         final View progressBar = dialog.findViewById(R.id.progress);
-        FloatingActionButton fabLeft = (FloatingActionButton) dialog.findViewById(R.id.left);
-        FloatingActionButton fabRight = (FloatingActionButton) dialog.findViewById(R.id.right);
-        fabLeft.setOnClickListener(new View.OnClickListener() {
+        String key = fragmentActivity.getResources().getString(R.string.google_api_key);
+        final String preparedUrl = streetViewUrl(latLng, key);
+        Picasso.with(fragmentActivity).load(preparedUrl).into(new LoadableImage(fragmentActivity, dialog,
+                imageView, progressBar) {
             @Override
-            public void onClick(View v) {
-                if (currentFOV == 0) currentFOV = 270;
-                else currentFOV -= 90;
-                loadImage(latLng, fragmentActivity, imageView, progressBar);
+            public void onBitmapFailed(Drawable errorDrawable) {
+                fragmentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (progressBar != null) Animations.hideView(progressBar);
+                    }
+                });
             }
         });
-        fabRight.setOnClickListener(new View.OnClickListener() {
+        imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentFOV == 270) currentFOV = 0;
-                else currentFOV += 90;
-                loadImage(latLng, fragmentActivity, imageView, progressBar);
+                dialog.dismiss();
             }
         });
-        loadImage(latLng, fragmentActivity, imageView, progressBar);
         dialog.show();
     }
 
-    private void loadImage(LatLng latLng, FragmentActivity fragmentActivity, ImageView imageView, View progressBar) {
-        String key = fragmentActivity.getResources().getString(R.string.google_api_key);
-        String preparedUrl = streetViewUrl(latLng, key, currentFOV);
-        Picasso.with(fragmentActivity).load(preparedUrl).into(new LoadableImage(imageView, progressBar));
-    }
 
-    private static String streetViewUrl(LatLng latLng, String apiKey, int fov) {
-//        return "https://maps.googleapis.com/maps/api/streetview?" +
-//                "size=300x300&location=" + latLng.latitude + "," + latLng.longitude
-//                + "&fov=" + fov + "&heading=150%pitch=-0.76&key=" + apiKey;
-
-//        return "https://maps.googleapis.com/maps/api/streetview?size=300x300" +
-//                "&location="+latLng.latitude+","+latLng.longitude
-//                +"&fov=90&heading=235&pitch=10&key=AIzaSyCvvTK6bhvzvttsW9dhKHEN8tAeCLSJoCk";
-
-        return "https://maps.googleapis.com/maps/api/streetview?size=400x400&location=40.720032,-73.988354&fov=90&heading=235&pitch=10&key=AIzaSyCvvTK6bhvzvttsW9dhKHEN8tAeCLSJoCk";
+    private static String streetViewUrl(LatLng latLng, String apiKey) {
+        return "https://maps.googleapis.com/maps/api/streetview?" +
+                "size=300x300&location=" + latLng.latitude + "," + latLng.longitude
+                + "&heading=150&pitch=-0.76&key=" + apiKey;
     }
 }
