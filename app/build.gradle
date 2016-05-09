@@ -41,4 +41,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:8.4.0'
     compile 'pl.charmas.android:android-reactive-location:0.8@aar'
     compile 'org.jsoup:jsoup:1.9.1'
+    compile ('com.github.Marchuck:ExpandableDelegates:v1.0.0'){
+        transitive = true
+    }
 }

@@ -19,6 +19,7 @@ import pl.marchuck.myagh.ifaces.FabListener;
 import pl.marchuck.myagh.tabs.about_faculty.FacultyFragment;
 import pl.marchuck.myagh.tabs.AboutFragment;
 import pl.marchuck.myagh.tabs.AghMapFragment;
+import pl.marchuck.myagh.tabs.helpdesk.HelpdeskFragment;
 import pl.marchuck.myagh.tabs.news.NewsFragment;
 import pl.marchuck.myagh.tabs.SplashScreenFragment;
 import pl.marchuck.myagh.utils.Animations;
@@ -111,6 +112,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             }   case R.id.nav_about_faculty: {
                 replaceTo(FacultyFragment.newInstance(), FacultyFragment.TAG);
+                break;
+            }  case R.id.nav_helpdesk: {
+                replaceTo(HelpdeskFragment.newInstance(), HelpdeskFragment.TAG);
                 break;
             }
             default:

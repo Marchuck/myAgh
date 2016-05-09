@@ -78,7 +78,7 @@ public class MoreNewsActivity extends AppCompatActivity {
         JsoupProxy.printElements(TAG, title);
         Log.d(TAG, "\n\nshowNews: body");
         JsoupProxy.printElements(TAG, body);
-setTitle(title.get(0).text());
+        setTitle(title.get(0).text());
         textView.setText(Html.fromHtml(body.get(0).html()));
     }
 
