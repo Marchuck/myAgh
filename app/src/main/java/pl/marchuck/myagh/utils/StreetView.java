@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.util.Size;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -27,7 +28,7 @@ import pl.marchuck.myagh.R;
 public class StreetView {
     public static final String TAG = StreetView.class.getSimpleName();
 
-    static abstract class LoadableImage implements Target {
+    public static abstract class LoadableImage implements Target {
         ImageView imageView;
         View progress;
         Activity a;
@@ -98,9 +99,16 @@ public class StreetView {
     }
 
 
-    private static String streetViewUrl(LatLng latLng, String apiKey) {
+    public static String streetViewUrl(LatLng latLng, String apiKey) {
         return "https://maps.googleapis.com/maps/api/streetview?" +
                 "size=300x300&location=" + latLng.latitude + "," + latLng.longitude
+                + "&heading=150&pitch=-0.76&key=" + apiKey;
+    }
+
+    public static String streetViewUrl(LatLng latLng, String apiKey, com.google.android.gms.common.images.Size size) {
+        return "https://maps.googleapis.com/maps/api/streetview?" +
+                "size=" + size.getWidth() + "x" + size.getHeight() + "&location="
+                + latLng.latitude + "," + latLng.longitude
                 + "&heading=150&pitch=-0.76&key=" + apiKey;
     }
 }

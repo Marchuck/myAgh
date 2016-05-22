@@ -1,4 +1,4 @@
-package pl.marchuck.myagh.tabs.helpdesk;
+package pl.marchuck.myagh.tabs.virtual_dean;
 
 
 import android.os.Bundle;
@@ -17,17 +17,18 @@ import pl.marchuck.myagh.ifaces.FabListener;
 import pl.marchuck.myagh.utils.Defaults;
 import pl.marchuck.myagh.utils.EmailSender;
 
-public class HelpdeskFragment extends Fragment implements FabListener {
+public class VirtualDeanFragment extends Fragment implements FabListener {
 
-    public static final String TAG = HelpdeskFragment.class.getSimpleName();
+    public static final String TAG = VirtualDeanFragment.class.getSimpleName();
 
-HelpdeskPresenter helpdeskPresenter;
-    public HelpdeskFragment() {
+    private VirtualDeanPresenter presenter;
+
+    public VirtualDeanFragment() {
         // Required empty public constructor
     }
 
-    public static HelpdeskFragment newInstance() {
-        HelpdeskFragment fragment = new HelpdeskFragment();
+    public static VirtualDeanFragment newInstance() {
+        VirtualDeanFragment fragment = new VirtualDeanFragment();
         return fragment;
     }
 
@@ -41,35 +42,31 @@ HelpdeskPresenter helpdeskPresenter;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_helpdesk, container, false);
-        helpdeskPresenter = new HelpdeskPresenter(this,view);
+        View view = inflater.inflate(R.layout.fragment_virtual_dean, container, false);
+        presenter = new VirtualDeanPresenter(view,getActivity());
         return view;
     }
 
     @Override
     public View.OnClickListener getFabListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EmailSender.fire(getActivity());
-            }
-        };
+        return null;
+    }
+
+    @Override
+    public void onStop() {
+        asMain().showFab();
+        super.onStop();
     }
 
     @Override
     public void setupFab(FloatingActionButton fab) {
-
-    }
-
-    @Override
-    public void onStop() { asMain().showFab();
-        super.onStop();
+        asMain().hideFab();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-         asMain().hideFab();
+        setupFab(asMain().fab);
 
     }
     @Override public void onDestroy() {
@@ -77,7 +74,6 @@ HelpdeskPresenter helpdeskPresenter;
         RefWatcher refWatcher = MyApp.getRefWatcher(getActivity());
         refWatcher.watch(this);
     }
-
     MainActivity asMain() {
         return (MainActivity) getActivity();
     }

@@ -2,10 +2,13 @@ package pl.marchuck.myagh.tabs.helpdesk;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -36,16 +39,23 @@ import pl.marchuck.myagh.utils.JsoupProxy;
  */
 public class HelpdeskAdapterWrapper {
 
-    ExpandableBuilder expandableBuilder;
-    Activity ctx;
+    private ExpandableBuilder expandableBuilder;
+    private Activity ctx;
+    private RecyclerView.Adapter delegatesAdapter;
 
-    public HelpdeskAdapterWrapper(Activity ctx) {
-        this.ctx = ctx;
+
+    public HelpdeskAdapterWrapper(Fragment ctx, Document doc) {
+        this.ctx = ctx.getActivity();
+        delegatesAdapter = createAdapter(doc);
     }
 
-    public void build(Document doc, RecyclerView recyclerView) {
+    public HelpdeskAdapterWrapper(Activity ctx, Document doc) {
+        this.ctx = ctx;
+        delegatesAdapter = createAdapter(doc);
+    }
 
-        RecyclerView.Adapter delegatesAdapter = createAdapter(doc);
+    public void build(RecyclerView recyclerView) {
+
         expandableBuilder = new ExpandableBuilder(ctx).withAdapter(delegatesAdapter).withRecyclerView(recyclerView);
         expandableBuilder.build();
     }
@@ -80,6 +90,7 @@ public class HelpdeskAdapterWrapper {
         DelegatesAdapter<String, QA> delegatesAdapter = new DelegatesAdapter<>(dataSet, manager);
         return delegatesAdapter;
     }
+
 
     public static class ParentAdapter extends DelegableParentAdapter<String, QA> {
         public static class ParentHolder extends AbstractExpandableItemViewHolder {
@@ -133,20 +144,30 @@ public class HelpdeskAdapterWrapper {
         }
 
         @Override
-        public void onBindChildViewHolder(RecyclerView.ViewHolder holder, int groupPosition, final int childPosition, int viewType) {
+        public void onBindChildViewHolder(final RecyclerView.ViewHolder holder, int groupPosition, final int childPosition, int viewType) {
             final XChild<QA> childWrapper = getDataSet().get(groupPosition).getChildren().get(childPosition);
-            ChildViewHolder vh = (ChildViewHolder) holder;
+            final ChildViewHolder vh = (ChildViewHolder) holder;
             vh.question.setText(Html.fromHtml(childWrapper.getChild().question));
             vh.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new AlertDialog.Builder(ctx)
+                    AlertDialog dialog = new AlertDialog.Builder(ctx)
                             .setMessage(Html.fromHtml(childWrapper.getChild().answer))
                             .setCancelable(true)
+                            .setOnKeyListener(keyListener)
+                            .setPositiveButton(android.R.string.ok,null)
                             .show();
                 }
             });
         }
+
+        public DialogInterface.OnKeyListener keyListener = new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                dialog.dismiss();
+                return false;
+            }
+        };
 
         @Override
         public RecyclerView.ViewHolder onCreateChildViewHolder(ViewGroup viewGroup, int i) {
@@ -154,5 +175,4 @@ public class HelpdeskAdapterWrapper {
             return new ChildViewHolder(v);
         }
     }
-
 }

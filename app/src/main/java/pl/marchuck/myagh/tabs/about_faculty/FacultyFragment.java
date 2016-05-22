@@ -10,9 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.leakcanary.RefWatcher;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import pl.marchuck.myagh.MainActivity;
+import pl.marchuck.myagh.MyApp;
 import pl.marchuck.myagh.R;
 import pl.marchuck.myagh.ifaces.FabListener;
 import pl.marchuck.myagh.utils.Animations;
@@ -68,6 +71,13 @@ public class FacultyFragment extends Fragment implements FabListener {
     public void onStop() {
         Animations.showView(asMain().fab);
         super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = MyApp.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 
     @Override

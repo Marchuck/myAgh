@@ -18,6 +18,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.squareup.leakcanary.RefWatcher;
 
 import java.util.Random;
 
@@ -40,6 +41,7 @@ public class AghMapFragment extends Fragment implements FabListener {
     public static final String TAG = AghMapFragment.class.getSimpleName();
     SupportMapFragment supportMapFragment;
     GoogleMap googleMap;
+    private GoogleMap.OnMapLongClickListener mapLongClickListener;
 
     public AghMapFragment() {
         // Required empty public constructor
@@ -111,6 +113,12 @@ public class AghMapFragment extends Fragment implements FabListener {
                 }
                 googleMap.animateCamera(CameraUpdateFactory
                         .newCameraPosition(new CameraPosition(myLocation, 17, 60, new Random().nextInt(360))));
+                mapLongClickListener = new GoogleMap.OnMapLongClickListener() {
+                    @Override
+                    public void onMapLongClick(LatLng latLng) {
+                        Log.d(TAG, "onMapLongClick: " + latLng);
+                    }
+                };
                 googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                     @Override
                     public void onMapLongClick(LatLng latLng) {
@@ -137,6 +145,15 @@ public class AghMapFragment extends Fragment implements FabListener {
     private void buildStreetViewDialog(LatLng l) {
         Log.d(TAG, "buildStreetViewDialog: ");
         StreetView.dialog(l, this.getActivity());
+    }
+
+    @Override
+    public void onDestroy() {
+        mapLongClickListener = null;
+        if (googleMap != null) googleMap.setOnMapLongClickListener(null);
+        super.onDestroy();
+        RefWatcher refWatcher = MyApp.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 
     @Override

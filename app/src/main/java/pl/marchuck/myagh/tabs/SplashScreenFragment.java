@@ -9,10 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.squareup.leakcanary.RefWatcher;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import pl.marchuck.myagh.MyApp;
 import pl.marchuck.myagh.R;
-import pl.marchuck.myagh.utils.DefaultError;
 import pl.marchuck.myagh.utils.Defaults;
 
 public class SplashScreenFragment extends Fragment {
@@ -66,14 +68,14 @@ public class SplashScreenFragment extends Fragment {
     private final Runnable loopUp = new Runnable() {
         @Override
         public void run() {
-            imageView.animate().alpha(.3f) .setDuration(Defaults.LazyAnimationDuration).start();
+            imageView.animate().alpha(.3f).setDuration(Defaults.LazyAnimationDuration).start();
             handler.postDelayed(justLoop, Defaults.LazyAnimationDuration);
         }
     };
 
     private void loopAction() {
         if (!canLooping) return;
-        imageView.animate().alpha(1f) .setDuration(Defaults.LazyAnimationDuration).start();
+        imageView.animate().alpha(1f).setDuration(Defaults.LazyAnimationDuration).start();
         handler.postDelayed(loopUp, Defaults.LazyAnimationDuration);
     }
 
@@ -85,6 +87,14 @@ public class SplashScreenFragment extends Fragment {
     public void onDestroyView() {
         stopLoop();
         super.onDestroyView();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = MyApp.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 
     private void stopLoop() {

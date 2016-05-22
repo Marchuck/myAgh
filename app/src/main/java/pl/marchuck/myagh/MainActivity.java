@@ -3,26 +3,36 @@ package pl.marchuck.myagh;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+
+import com.google.android.gms.common.images.Size;
+import com.google.android.gms.maps.model.LatLng;
+import com.squareup.leakcanary.RefWatcher;
+import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import pl.marchuck.myagh.ifaces.FabListener;
-import pl.marchuck.myagh.tabs.about_faculty.FacultyFragment;
 import pl.marchuck.myagh.tabs.AboutFragment;
 import pl.marchuck.myagh.tabs.AghMapFragment;
+import pl.marchuck.myagh.tabs.SplashScreenFragment;
+import pl.marchuck.myagh.tabs.about_faculty.FacultyFragment;
 import pl.marchuck.myagh.tabs.helpdesk.HelpdeskFragment;
 import pl.marchuck.myagh.tabs.news.NewsFragment;
-import pl.marchuck.myagh.tabs.SplashScreenFragment;
+import pl.marchuck.myagh.tabs.skos.SkosFragment;
+import pl.marchuck.myagh.tabs.virtual_dean.VirtualDeanFragment;
 import pl.marchuck.myagh.utils.Animations;
+import pl.marchuck.myagh.utils.StreetView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -32,7 +42,7 @@ public class MainActivity extends AppCompatActivity
     @Bind(R.id.fab)
     public FloatingActionButton fab;
     @Bind(R.id.toolbar)
-  public   Toolbar toolbar;
+    public Toolbar toolbar;
 
     @Bind(R.id.nav_view)
     NavigationView navigationView;
@@ -52,10 +62,27 @@ public class MainActivity extends AppCompatActivity
 
     private void setupDrawer() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                loadDrawerImage();
+            }
+        };
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+        loadDrawerImage();
+    }
+
+    private void loadDrawerImage() {
+        if (navigationView == null) return;
+        ImageView im = (ImageView) navigationView.findViewById(R.id.imageView);
+        if (im == null) return;
+        String key = getResources().getString(R.string.google_api_key);
+        LatLng aghLatLng = new LatLng(50.065830204849036, 19.91962507367134);
+        final String preparedUrl = StreetView.streetViewUrl(aghLatLng, key,new Size(400,200));
+        Picasso.with(this).load(preparedUrl).into(im);
     }
 
     @Override
@@ -110,11 +137,21 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_start: {
                 replaceTo(SplashScreenFragment.newInstance(), SplashScreenFragment.TAG);
                 break;
-            }   case R.id.nav_about_faculty: {
+            }
+            case R.id.nav_about_faculty: {
                 replaceTo(FacultyFragment.newInstance(), FacultyFragment.TAG);
                 break;
-            }  case R.id.nav_helpdesk: {
+            }
+            case R.id.nav_helpdesk: {
                 replaceTo(HelpdeskFragment.newInstance(), HelpdeskFragment.TAG);
+                break;
+            }
+            case R.id.nav_virtual_dean: {
+                replaceTo(VirtualDeanFragment.newInstance(), VirtualDeanFragment.TAG);
+                break;
+            }
+            case R.id.nav_skos: {
+                replaceTo(SkosFragment.newInstance(), SkosFragment.TAG);
                 break;
             }
             default:
@@ -162,5 +199,12 @@ public class MainActivity extends AppCompatActivity
     public void showFab() {
         Log.d(TAG, "showFab: ");
         Animations.showView(fab);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = MyApp.getRefWatcher(this);
+        refWatcher.watch(this);
     }
 }

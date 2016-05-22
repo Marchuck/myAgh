@@ -64,7 +64,7 @@ public class NewsPresenter {
                         progressBar.setVisibility(View.GONE);
 
                     }
-                }, DefaultError.create(TAG, getActivity()));
+                }, DefaultError.withHideView(progressBar).create(TAG, getActivity()));
 
     }
 

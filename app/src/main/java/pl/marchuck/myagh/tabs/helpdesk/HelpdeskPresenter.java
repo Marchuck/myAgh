@@ -15,12 +15,14 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import pl.lukaszmarczak.expandabledelegates.utils.ExpandableBuilder;
 import pl.marchuck.myagh.R;
 import pl.marchuck.myagh.utils.Animations;
 import pl.marchuck.myagh.utils.DefaultError;
 import pl.marchuck.myagh.utils.JsoupProxy;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -45,20 +47,18 @@ public class HelpdeskPresenter {
     private void logic() {
         Log.d(TAG, "logic: ");
         Animations.showView(progressBar);
-        JsoupProxy.getJsoupDocument("http://help.eaiib.agh.edu.pl").subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Document>() {
+        JsoupProxy.getJsoupDocument("http://help.eaiib.agh.edu.pl").map(new Func1<Document, HelpdeskAdapterWrapper>() {
+            @Override
+            public HelpdeskAdapterWrapper call(Document document) {
+                return new HelpdeskAdapterWrapper(ctx, document);
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<HelpdeskAdapterWrapper>() {
                     @Override
-                    public void call(Document document) {
+                    public void call(HelpdeskAdapterWrapper helpdeskAdapterWrapper) {
                         Animations.hideView(progressBar);
-                        if (document == null) return;
-                        Elements categories = document.getElementsByClass("category");
-                        Log.d(TAG, "print all categories ");
-                        JsoupProxy.printElements(TAG, categories);
-
-                        new HelpdeskAdapterWrapper(ctx.getActivity()).build(document, recyclerView);
+                        helpdeskAdapterWrapper.build(recyclerView);
                     }
-                }, DefaultError.create(TAG, ctx.getActivity()));
-
+                }, DefaultError.withHideView(progressBar).create(TAG, ctx));
     }
 }

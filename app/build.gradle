@@ -44,4 +44,6 @@ dependencies {
     compile ('com.github.Marchuck:ExpandableDelegates:v1.0.0'){
         transitive = true
     }
+    compile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+
 }

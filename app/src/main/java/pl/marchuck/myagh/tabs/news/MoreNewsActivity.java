@@ -12,12 +12,15 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.leakcanary.RefWatcher;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import pl.marchuck.myagh.MyApp;
 import pl.marchuck.myagh.R;
 import pl.marchuck.myagh.utils.Animations;
 import pl.marchuck.myagh.utils.DefaultError;
@@ -81,7 +84,11 @@ public class MoreNewsActivity extends AppCompatActivity {
         setTitle(title.get(0).text());
         textView.setText(Html.fromHtml(body.get(0).html()));
     }
-
+    @Override public void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = MyApp.getRefWatcher(this);
+        refWatcher.watch(this);
+    }
     private void showErrorMessage(Throwable throwable) {
         DefaultError.create(TAG, this).call(throwable);
     }

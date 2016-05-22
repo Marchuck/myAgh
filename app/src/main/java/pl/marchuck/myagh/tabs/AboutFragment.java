@@ -8,7 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.leakcanary.RefWatcher;
+
 import pl.marchuck.myagh.MainActivity;
+import pl.marchuck.myagh.MyApp;
 import pl.marchuck.myagh.R;
 import pl.marchuck.myagh.ifaces.FabListener;
 import pl.marchuck.myagh.utils.Defaults;
@@ -63,7 +66,11 @@ public class AboutFragment extends Fragment implements FabListener {
         setupFab(asMain().fab);
 
     }
-
+    @Override public void onDestroy() {
+        super.onDestroy();
+        RefWatcher refWatcher = MyApp.getRefWatcher(getActivity());
+        refWatcher.watch(this);
+    }
     MainActivity asMain() {
         return (MainActivity) getActivity();
     }

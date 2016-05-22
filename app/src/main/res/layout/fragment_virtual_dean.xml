@@ -1,0 +1,58 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    tools:context="pl.marchuck.myagh.tabs.AboutFragment">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/input_layout_username"
+        android:layout_width="300sp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/input_layout_password"
+
+        android:layout_centerHorizontal="true">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/input_username"
+            android:layout_width="300sp"
+            android:layout_height="wrap_content"
+            android:hint="@string/virtual_dean_username" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/input_layout_password"
+        android:layout_width="300sp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/virtual_dean_login_button"
+        android:layout_centerHorizontal="true">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/input_password"
+            android:inputType="textPassword"
+            android:layout_width="300sp"
+            android:layout_height="wrap_content"
+            android:hint="@string/virtual_dean_password" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/virtual_dean_login_button"
+        android:layout_width="300sp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        android:background="@color/colorPrimaryDark"
+        android:clickable="true"
+        android:elevation="16sp"
+        android:text="@string/login_button" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+</RelativeLayout>
